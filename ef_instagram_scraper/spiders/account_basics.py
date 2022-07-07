@@ -82,7 +82,7 @@ class AccountBasics(scrapy.Spider):
 		s3_file_contents = s3.get_object(Bucket=bucket, Key=latest_fp) 
 		df = pd.read_csv(s3_file_contents['Body'])
 
-		user_list = list(df.instagram_username.values)
+		user_list = list(df.instagram_username.values)[:5]
 
 		# iterate and yield reqs for all artists
 		for i, username in enumerate(user_list):
