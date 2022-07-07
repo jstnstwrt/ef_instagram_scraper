@@ -55,8 +55,6 @@ class AccountBasics(scrapy.Spider):
 		AWS_ACCESS_KEY_ID = self.settings['AWS_ACCESS_KEY_ID']
 		AWS_SECRET_ACCESS_KEY = self.settings['AWS_SECRET_ACCESS_KEY']
 
-		print(f'  __________________________________________                            {AWS_SECRET_ACCESS_KEY}')
-
 		s3 = boto3.client(
 		    's3',
 		    aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -65,7 +63,7 @@ class AccountBasics(scrapy.Spider):
 
 		match_algo_version = 'v1.0.0'
 		bucket = 'euclidsfund-data-pipeline'
-		prefix = f'/pipeline/artist_matches/artist_matches_{match_algo_version}_'
+		prefix = f'pipeline/artist_matches/artist_matches_{match_algo_version}_'
 
 		# identify the latest export of preprocessed artist slugs
 		list_of_files = []
