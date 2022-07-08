@@ -12,31 +12,20 @@ class AccountBasics(scrapy.Spider):
 
 	name = 'account_basics'
 
-	def build_request(self,username=None):
+	def build_request(self,pk=None):
 
+		# Add API key
+		RAPIDAPIKEY = self.settings['RAPIDAPIKEY']
 
 		# Build endpoint URL to grab account basics.
-		base_url = 'https://www.instagram.com/'
-		params = '/?__a=1'
-		endpoint = base_url + str(username) + params
+		endpoint = "https://instagram47.p.rapidapi.com/email_and_details"
 
-		# Add headers
+		# Add headers & query params
 		headers = {
-		  'authority': 'www.instagram.com',
-		  'cache-control': 'max-age=0',
-		  'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="96", "Google Chrome";v="96"',
-		  'sec-ch-ua-mobile': '?0',
-		  'sec-ch-ua-platform': '"macOS"',
-		  'upgrade-insecure-requests': '1',
-		  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-		  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-		  'sec-fetch-site': 'none',
-		  'sec-fetch-mode': 'navigate',
-		  'sec-fetch-user': '?1',
-		  'sec-fetch-dest': 'document',
-		  'accept-language': 'en-US,en;q=0.9',
-		  'cookie': 'csrftoken=AHwZliXQ3OFBisKtj0vH314XR3wG2kTx; mid=YcvX7AAEAAFyFPaAwRLQxKXque8m; ig_did=9E06B2B4-45F9-4397-B04A-4B9DB5C6FEB7; ig_nrcb=1; csrftoken=LyvNn2uDUx6Oo4tP37QkDMeaD7gMtn8w; ds_user_id=332324252; rur="NAO\\054332324252\\0541672272530:01f79ab1f38fd1e536e502764b485c5188c8af4be95a6b8ecdf2eb40b786345a5bda8f75"'
+		    "X-RapidAPI-Key": RAPIDAPIKEY,
+		    "X-RapidAPI-Host": "instagram47.p.rapidapi.com"
 		}
+		params = {"userid":pk}
 
 		# Compose request
 		request = scrapy.Request(
@@ -44,6 +33,7 @@ class AccountBasics(scrapy.Spider):
 			callback=self.parse,
 			method='GET',
 			headers=headers,
+			formdata=params
 		)
 
 		return request
@@ -80,19 +70,17 @@ class AccountBasics(scrapy.Spider):
 		s3_file_contents = s3.get_object(Bucket=bucket, Key=latest_fp) 
 		df = pd.read_csv(s3_file_contents['Body'])
 
-		user_list = list(df.instagram_username.values)[:5]
+		user_list = list(df.sample(5).pk.values)
 
 		# iterate and yield reqs for all artists
-		for i, username in enumerate(user_list):
-			print('{}-{}-{}'.format(i,len(user_list),username))
-			yield self.build_request(username)
+		for i, pk in enumerate(user_list):
+			print('{}-{}-{}'.format(i,len(user_list),pk))
+			yield self.build_request(pk)
 
 
 	def parse(self,response):
 
-		d = json.loads(response.text)
-
-		basics_data = d['graphql']['user']
+		basics_data = json.loads(response.text)
 
 		yield basics_data
 
