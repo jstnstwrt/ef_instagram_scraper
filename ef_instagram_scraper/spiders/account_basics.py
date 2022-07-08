@@ -33,7 +33,7 @@ class AccountBasics(scrapy.Spider):
 			callback=self.parse,
 			method='GET',
 			headers=headers,
-			formdata=params
+			body=params
 		)
 
 		return request
