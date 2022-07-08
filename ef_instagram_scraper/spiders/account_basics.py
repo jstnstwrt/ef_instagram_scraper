@@ -87,7 +87,7 @@ class AccountBasics(scrapy.Spider):
 		# How many days after start day are we today?
 		# Ie., how many prior batches have we completed?
 		today = datetime.datetime.today().day
-		batch_index = today - RAPIDAPI_DAILY_REQ_LIMIT
+		batch_index = today - ZYTE_SCHEDULE_START_DAY
 
 		assert batch_index >= 0 , "Batch index should not be negative."
 
