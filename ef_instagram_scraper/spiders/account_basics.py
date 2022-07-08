@@ -3,6 +3,7 @@
 import scrapy
 import pandas as pd
 import json
+import datetime
 
 # for accessing files on AWS S3
 import os
@@ -40,7 +41,10 @@ class AccountBasics(scrapy.Spider):
 
 	def start_requests(self):
 
-		# connect to aws s3
+		###########################################
+		### CONNECTING TO S3 and IMPORTING DATA ###
+		###########################################
+
 		AWS_ACCESS_KEY_ID = self.settings['AWS_ACCESS_KEY_ID']
 		AWS_SECRET_ACCESS_KEY = self.settings['AWS_SECRET_ACCESS_KEY']
 
@@ -69,7 +73,34 @@ class AccountBasics(scrapy.Spider):
 		s3_file_contents = s3.get_object(Bucket=bucket, Key=latest_fp) 
 		df = pd.read_csv(s3_file_contents['Body'])
 
-		user_list = list(df.sample(5).pk.values)
+
+		###########################################
+		### Batching Data for Day's Scrape
+		###########################################
+
+		# Note: Zyte start day corresponds to periodic schedule, ie., 7th day of each month
+		# Required because of RapidAPIs 8K/reqs per day rate limit
+
+		ZYTE_SCHEDULE_START_DAY = int(self.settings['ZYTE_SCHEDULE_START_DAY'])
+		RAPIDAPI_DAILY_REQ_LIMIT = int(self.settings['RAPIDAPI_DAILY_REQ_LIMIT'])
+
+		# How many days after start day are we today?
+		# Ie., how many prior batches have we completed?
+		today = datetime.datetime.today().day
+		batch_index = today - RAPIDAPI_DAILY_REQ_LIMIT
+
+		assert batch_index >= 0 , "Batch index should not be negative."
+
+		# Defining the next batch
+		start_batch = batch_index * RAPIDAPI_DAILY_REQ_LIMIT
+		end_batch = (batch_index +1) * RAPIDAPI_DAILY_REQ_LIMIT
+
+		batch_df = df.iloc[start_batch:end_batch]
+
+		# Error out if there are no more batches avail
+		assert batch_df.shape[0] > 0 , "No matched artists to scrape."
+
+		user_list = list(batch_df.sample(5).pk.values)
 
 		# iterate and yield reqs for all artists
 		for i, pk in enumerate(user_list):
