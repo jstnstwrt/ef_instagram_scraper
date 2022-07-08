@@ -33,7 +33,7 @@ class AccountBasics(scrapy.Spider):
 			callback=self.parse,
 			method='GET',
 			headers=headers,
-			body=params
+			body=json.dumps(params)
 		)
 
 		return request
