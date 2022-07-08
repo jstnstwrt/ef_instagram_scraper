@@ -18,22 +18,21 @@ class AccountBasics(scrapy.Spider):
 		RAPIDAPIKEY = self.settings['RAPIDAPIKEY']
 
 		# Build endpoint URL to grab account basics.
-		endpoint = "https://instagram47.p.rapidapi.com/email_and_details"
+		url = "https://instagram47.p.rapidapi.com/email_and_details"
+		endpoint = f'{url}?userid={pk}'
 
 		# Add headers & query params
 		headers = {
 		    "X-RapidAPI-Key": RAPIDAPIKEY,
 		    "X-RapidAPI-Host": "instagram47.p.rapidapi.com"
 		}
-		params = {"userid":pk}
 
 		# Compose request
 		request = scrapy.Request(
 			url=endpoint,
 			callback=self.parse,
 			method='GET',
-			headers=headers,
-			body=json.dumps(params)
+			headers=headers
 		)
 
 		return request
