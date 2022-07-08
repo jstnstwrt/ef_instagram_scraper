@@ -21,5 +21,5 @@ s3_filename =f'{scraper_version}_'+'%(time)s.json'
 FEED_URI = f'{s3_filepath}/{year_month}/{s3_filename}'
 FEED_FORMAT = 'json'
 
-ZYTE_SCHEDULE_START_DAY = 7
+ZYTE_SCHEDULE_START_DAY = 8
 RAPIDAPI_DAILY_REQ_LIMIT = 6000

@@ -100,7 +100,7 @@ class AccountBasics(scrapy.Spider):
 		# Error out if there are no more batches avail
 		assert batch_df.shape[0] > 0 , "No matched artists to scrape."
 
-		user_list = list(batch_df.sample(5).pk.values)
+		user_list = list(batch_df.pk.values)
 
 		# iterate and yield reqs for all artists
 		for i, pk in enumerate(user_list):
