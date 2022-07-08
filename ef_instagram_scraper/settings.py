@@ -14,7 +14,10 @@ CONCURRENT_REQUESTS = 1
 
 year_month = datetime.datetime.today().strftime('%Y_%m')
 
-FEED_URI = 's3://euclidsfund-data-pipeline/data_acquisition/instagram/raw/%(name)s'+f'/{year_month}/v1.5.0_'+'%(time)s.json'
+s3_filepath ='s3://euclidsfund-data-pipeline/data_acquisition/instagram/raw/%(name)s'
+s3_filename ='v1.5.0_'+'%(time)s.json'
+
+FEED_URI = +f'{s3_filepath}/{year_month}/{s3_filename}'
 FEED_FORMAT = 'json'
 
 ZYTE_SCHEDULE_START_DAY = 7
