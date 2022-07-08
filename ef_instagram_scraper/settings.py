@@ -10,5 +10,5 @@ NEWSPIDER_MODULE = 'ef_instagram_scraper.spiders'
 CONCURRENT_REQUESTS = 1
 
 ## S3 Filepath and Export Feed
-FEED_URI = 's3://euclidsfund-data-pipeline/data_acquisition/instagram/raw/%(name)s/%(time)s.json'
+FEED_URI = 's3://euclidsfund-data-pipeline/data_acquisition/instagram/raw/%(name)s/v1.5.0_%(time)s.json'
 FEED_FORMAT = 'json'
